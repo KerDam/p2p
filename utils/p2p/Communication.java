@@ -1,4 +1,9 @@
 package p2p;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 
 
@@ -17,6 +22,26 @@ public class Communication {
 		
 		
 	}
+	
+//	public void send(String message, String ip){
+//		try {
+//			Socket socketClient = new Socket(ip, 8080);
+//			OutputStream outputStream = socketClient.getOutputStream();
+//			PrintWriter writer = new PrintWriter(outputStream, true);
+//			writer.println(message);
+//			writer.close();
+//			socketClient.close();
+//			outputStream.close();
+//		} catch (UnknownHostException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			// TODO Auto-generated catch block
+//			e.printStackTrace();
+//		}
+//	}
+	
+	
 	
 	/**
 	 * Méthode qui récupère les messages reçu des recepteurs.
