@@ -72,7 +72,7 @@ public class HashServer {
 				    if (availableHashes.isEmpty()) {
 					toSend = "aht";
 				    } else {
-					toSend = availableHashes.removeFirst().toString();
+					toSend = "hash:"+availableHashes.removeFirst().toString();
 					knownHashes.put(ip,toSend);
 				    }
 				}

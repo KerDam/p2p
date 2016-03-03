@@ -2,6 +2,7 @@ package p2p;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
@@ -117,6 +118,16 @@ public class Communication {
 				break;
 					
 				case "end":			
+				break;
+				
+				case "yaf":
+				break;
+				case "hash":
+					pair.setMine(action[1], InetAddress.getLocalHost().getHostAddress().toString());
+				break;
+				
+				case "ip":
+					this.send("con:"+pair.getMine()+":"+pair.getIp(pair.getMine()), action[1], portPair);
 				break;
 				
 			/* Sinon */
