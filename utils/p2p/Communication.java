@@ -9,24 +9,32 @@ import java.util.LinkedList;
 
 public class Communication {
 	
+	protected static String ipHash = "localhost";
+	protected static String ipWelcome = "localhost";
+	protected static String ipMonitor = "localhost";
+	
 	private Recepteur recepteurMoniteur;
 	private Recepteur recepteurPair;
+	private Recepteur recepteurHash;
 	
 	private Emetteur emetteur;
 	
 	private LinkedList<String> messages;
 
 	public Communication() {
-		this.recepteurMoniteur = new Recepteur(8002,this);
-		this.recepteurPair = new Recepteur(8000,this);
+		this.recepteurMoniteur = new Recepteur(9001,this);
+		this.recepteurHash = new Recepteur(9000,this);
+		this.recepteurPair = new Recepteur(9002,this);
 		
-		this.emetteur = new Emetteur(8000,this);
+		this.emetteur = new Emetteur(this);
 		
 		// Lancer les thread
 		Thread thRecepteurMoniteur = new Thread(this.recepteurMoniteur);
+		Thread thRecepteurHash = new Thread(this.recepteurHash);
 		Thread thRecepteurPair = new Thread(this.recepteurPair);
 		
 		thRecepteurMoniteur.start();
+		thRecepteurHash.start();
 		thRecepteurPair.start();
 		
 	}
@@ -115,6 +123,7 @@ public class Communication {
 	
 	public void receptMes(String s) {
 		this.messages.addLast(s);
+		
 	}
 
 	/**
@@ -122,8 +131,13 @@ public class Communication {
 	 * @param message commande que l'envoie au pair
 	 * @param ip du pair destinataire
 	 */
-	public void send(String message, String ip) {
-		this.emetteur.sendTo(message, ip);
+	public void send(String message, String ip,int port) {
+		this.emetteur.sendTo(message, ip, port);
+		
+	}
+
+	public void askHash() {
+		this.emetteur.sendToHashServeur();
 		
 	}
 }

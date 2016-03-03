@@ -8,11 +8,11 @@ import java.net.UnknownHostException;
 
 public class Emetteur {
 	
-	private int port;
+	
+
 	private Communication com;
 
-	public Emetteur(int portNumber, Communication com) {
-		this.port = portNumber;
+	public Emetteur(Communication com) {
 		this.com = com;		
 		
 	}
@@ -22,13 +22,35 @@ public class Emetteur {
 	 * @param message message que l'on envoie au pair
 	 * @param ip du pair destinataire
 	 */
-	public void sendTo(String message, String ip) {
+	public void sendTo(String message, String ip, int port) {
 		try {
-			Socket sock = new Socket(ip, this.port);
+			Socket sock = new Socket(ip, port);
 			OutputStream fluxOut = sock.getOutputStream();
 			PrintWriter out = new PrintWriter(fluxOut, true);
 			out.println(message);
- 
+			sock.close();
+			
+		} catch (UnknownHostException e) {			
+			e.printStackTrace();
+			System.err.println("Hôte introuvable.");
+		} catch (IOException e) {			
+			e.printStackTrace();
+		}
+	}
+	
+	/**
+	 * Méthode qui envoie un message au serveur de hash pour recevoir un hash
+	 * yo:
+	 * @param message message que l'on envoie au pair
+	 * @param ip du pair destinataire
+	 */
+	public void sendToHashServeur() {
+		try {
+			Socket sock = new Socket(this.com.ipHash, 8001);
+			OutputStream fluxOut = sock.getOutputStream();
+			PrintWriter out = new PrintWriter(fluxOut, true);			
+			out.println("yo:");
+			
 			
 		} catch (UnknownHostException e) {			
 			e.printStackTrace();
