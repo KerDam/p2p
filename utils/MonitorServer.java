@@ -100,8 +100,7 @@ public class MonitorServer {
 	    res = Integer.parseInt(i);
 	} finally {
 	    return res;
-	}
-
+    }
     }
 
     // Classe pour stocker les tables de routage

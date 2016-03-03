@@ -117,7 +117,7 @@ public class WelcomeServer {
 						if (!inNetwork.isEmpty())
 						    anIp = getIp(inNetwork);
 						inNetwork.put(hash,words[2]);
-						out.println(anIp);
+						out.println("ip:"+anIp);
 					    }
 					}
 					break;
