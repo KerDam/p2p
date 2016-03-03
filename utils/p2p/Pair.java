@@ -1,7 +1,8 @@
 package p2p;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Set;
 
 public class Pair {
@@ -9,10 +10,9 @@ public class Pair {
 	private HashMap<String,String> networkTable;
 	private String pre,next,mine;
 	private Communication communication;
-	
 	public Pair(){
 		networkTable = new HashMap<String,String>();
-		communication = new Communication();
+		communication = new Communication(this);
 	}
 	
 	public void setPre(String key, String ip){
@@ -89,11 +89,16 @@ public class Pair {
 		return this.getIp(String.valueOf(closest));
 	}
 	public void sendMessage(String message, String hash){
-		this.communication.send("send:"+message+":"+hash, this.getClosest(hash));
+		this.communication.send("send:"+message+":"+hash, this.getIp(this.getClosest(hash)));
 	}
 	
-	public void init () {
-		this.communication.askHash();	// Le serveur hash renvoi un hash
-		this.sendMessage("yo:"+this.mine+":"+this.getIp(this.mine), this.communication.ipWelcome);// welcome renvoi un point d'entre
+	public String getIp(){
+		try {
+			return String.valueOf(InetAddress.getLocalHost().getHostAddress());
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return "wrq";
 	}
 }

@@ -9,6 +9,7 @@ import java.util.LinkedList;
 
 public class Communication {
 	
+	
 	protected static String ipHash = "localhost";
 	protected static String ipWelcome = "localhost";
 	protected static String ipMonitor = "localhost";
@@ -18,14 +19,14 @@ public class Communication {
 	private Recepteur recepteurHash;
 	
 	private Emetteur emetteur;
-	
+	private Pair pair;
 	private LinkedList<String> messages;
 
-	public Communication() {
+	public Communication(Pair p) {
 		this.recepteurMoniteur = new Recepteur(9001,this);
 		this.recepteurHash = new Recepteur(9000,this);
 		this.recepteurPair = new Recepteur(9002,this);
-		
+		this.pair = p;
 		this.emetteur = new Emetteur(this);
 		
 		// Lancer les thread
@@ -79,16 +80,23 @@ public class Communication {
 			switch (action[0]) {
 			
 			/*Message de pair à pair */
-				case "con":				
+				case "con":	
+					if (Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1]))
+						this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext(), action[2], portPair);
+					else
+						pair.sendMessage(mes, action[1]);
 				break;
 				
 				case "conAccept":
+					pair.conAccept(action[1], action[3], action[2], action[4]);
 				break;
 				
 				case "setSucc":
+					pair.setNext(action[2], action[1]);
 				break;					
 				
 				case "setPre":			
+					pair.setPre(action[2], action[1]);
 				break;				
 				
 				
