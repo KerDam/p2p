@@ -4,8 +4,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.swing.text.html.HTMLDocument.Iterator;
-
 public class Pair {
 
 	private HashMap<String,String> networkTable;
@@ -76,20 +74,20 @@ public class Pair {
 		this.communication.send("setPre:"+this.getIp(this.getMine())+":"+this.getMine(), this.getIp(this.getNext()));
 	}
 	
-	public void getClosest(String hash){
-		String closest = "-1";
-		Set<String> keys = networkTable.keySet();
-		Iterator<String> ite = keys.iterator();
+	public String getClosest(String hash){
+		int closest = -1;
+		int hashInt = Integer.valueOf(hash);
+		Set<String> keys = this.networkTable.keySet();
+		java.util.Iterator<String> ite = keys.iterator();
 		while (ite.hasNext()){
-			
+			int tmp = Integer.valueOf(ite.next());
+			if (tmp > closest && tmp < hashInt){
+				closest = tmp;
+			}
 		}
+		return this.getIp(String.valueOf(closest));
 	}
-	public void sendMessage(String hash){
-		
+	public void sendMessage(String message, String hash){
+		this.communication.send("send:"+message+":"+hash, this.getClosest(hash));
 	}
-	
-	
-	
-	
-	
 }
