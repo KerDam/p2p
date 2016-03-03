@@ -7,19 +7,27 @@ public class Communication {
 	private Recepteur recepteurMoniteur;
 	private Recepteur recepteurPair;
 	
+	private Emetteur emetteur;
+	
 	private LinkedList<String> messages;
 
 	public Communication() {
 		this.recepteurMoniteur = new Recepteur(8002,this);
 		this.recepteurPair = new Recepteur(8000,this);
 		
-		// Lancer les thread
+		this.emetteur = new Emetteur(8000,this);
 		
+		// Lancer les thread
+		Thread thRecepteurMoniteur = new Thread(this.recepteurMoniteur);
+		Thread thRecepteurPair = new Thread(this.recepteurPair);
+		
+		thRecepteurMoniteur.start();
+		thRecepteurPair.start();
 		
 	}
 	
 	/**
-	 * Méthode qui récupère les messages reçu des recepteurs.
+	 * Méthode qui traite les messages reçu des recepteurs.
 	 * Message possibles:
 	 * - con:Hash:IP -> message envoyée du nouveau pair, vers un autre
 	 * - conAccept:IP_precedent:Hash_precedent:IP_suivant:Hash_suivant -> message renvoyé d'un pair au nouveau
@@ -81,6 +89,16 @@ public class Communication {
 	}
 	
 	public void receptMes(String s) {
-		this.messages.addFirst(s);
+		this.messages.addLast(s);
+	}
+
+	/**
+	 * Méthode qui envoie un message à un autre paire
+	 * @param message commande que l'envoie au pair
+	 * @param ip du pair destinataire
+	 */
+	public void send(String message, String ip) {
+		this.emetteur.sendTo(message, ip);
+		
 	}
 }
