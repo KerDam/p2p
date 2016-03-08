@@ -14,7 +14,7 @@ public class Communication {
 	protected static String ipHash = "localhost";
 	protected static String ipWelcome = "localhost";
 	protected static String ipMonitor = "localhost";
-	
+	public static int portPair = 9003;
 	private Recepteur recepteurMoniteur;
 	private Recepteur recepteurPair;
 	private Recepteur recepteurHash;
