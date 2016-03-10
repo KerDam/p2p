@@ -6,14 +6,15 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.LinkedList;
+import java.util.concurrent.TimeUnit;
 
 
-public class Communication {
+public class Communication implements Runnable {
 	
 	
-	public static String ipHash = "localhost";
-	public static String ipWelcome = "localhost";
-	public static String ipMonitor = "localhost";
+	public static String ipHash = "172.21.65.28";
+	public static String ipWelcome = "172.21.65.28";
+	public static String ipMonitor = "172.21.65.28";
 	public static int portPair = 9051;
 	public static int portMoniteur = 8002;
 	public static int portHash = 8001;
@@ -27,34 +28,20 @@ public class Communication {
 	private LinkedList<String> messages;
 
 	public Communication(Pair p) {
-		this.recepteurPair = new Recepteur(portPair,this);
+		this.recepteurPair = new Recepteur(portHash,this);
 		this.pair = p;
 		this.emetteur = new Emetteur(this);
+		this.messages = new LinkedList<String>();
 		
 		// Lancer les thread
 		Thread thRecepteurPair = new Thread(this.recepteurPair);
 		
-		thRecepteurPair.start();
+		
+		
 		
 	}
 	
-//	public void send(String message, String ip){
-//		try {
-//			Socket socketClient = new Socket(ip, 8080);
-//			OutputStream outputStream = socketClient.getOutputStream();
-//			PrintWriter writer = new PrintWriter(outputStream, true);
-//			writer.println(message);
-//			writer.close();
-//			socketClient.close();
-//			outputStream.close();
-//		} catch (UnknownHostException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-//	}
+
 	
 	
 	
@@ -70,11 +57,17 @@ public class Communication {
 	public void receptionMessage() {
 		
 		
-		while ( !this.messages.isEmpty() ) {
-			String mes = this.messages.pop();
+		while (true){
+			//System.out.println("hello");
+			//System.out.println(messages.isEmpty());
+			if (messages.isEmpty() == false){
+				String mes = this.messages.pop();
+				System.out.println("traite->- "+mes);
+			
 			String sep = ":";
 			
 			String[] action = mes.split(sep);
+			
 			switch (action[0]) {
 			
 			/*Message de pair à pair */
@@ -129,7 +122,8 @@ public class Communication {
 				break;
 				
 				case "ip":
-					this.send("con:"+pair.getMine()+":"+pair.getIp(pair.getMine()), action[1], portPair);
+					if (!action[1].equals("yaf"))
+						this.send("con:"+pair.getMine()+":"+pair.getIp(pair.getMine()), action[1], portPair);
 				break;
 				
 			/* Sinon */
@@ -137,6 +131,14 @@ public class Communication {
 				break;
 			}
 		}
+			try {
+				TimeUnit.SECONDS.sleep(1);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		
 		
 		
 		
@@ -144,6 +146,10 @@ public class Communication {
 	
 	public void receptMes(String s) {
 		this.messages.addLast(s);
+//		System.out.println(messages.isEmpty());
+		//for(String s2 : this.messages) {
+			//System.out.println("->-"+s2);
+		//}
 		
 	}
 
@@ -156,6 +162,18 @@ public class Communication {
 		this.emetteur.sendTo(message, ip, port);
 		
 	}
+
+
+
+
+
+	@Override
+	public void run() {
+		this.receptionMessage();
+		
+		
+	}
+	
 
 	//public void askHash() {
 		//this.emetteur.sendToHashServeur();

@@ -1,10 +1,16 @@
 package p2p;
 
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.net.ConnectException;
 import java.net.Socket;
 import java.net.UnknownHostException;
+
+import com.sun.java_cup.internal.runtime.Scanner;
 
 public class Emetteur {
 	
@@ -24,15 +30,27 @@ public class Emetteur {
 	 */
 	public void sendTo(String message, String ip, int port) {
 		try {
-			Socket sock = new Socket(ip, port);
-			OutputStream fluxOut = sock.getOutputStream();
-			PrintWriter out = new PrintWriter(fluxOut, true);
-			out.println(message);
-			sock.close();
+			Socket s = new Socket(ip, port);
+			PrintWriter out = new PrintWriter(s.getOutputStream(), true);
+		    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
+		    
+		    out.println(message);
+			String inputLine;
+			while ((inputLine = in.readLine()) == null) {
+			    // Si l'ip est bien reçue et correcte (i.e. le serveur n'a pas répondu « ukh » ou « wrq »)
+			    // On l'enregistre pour la retourner
+			    //System.out.println("waiting");
+			} 
+		    System.out.println("recoi-<- "+inputLine);
+		    this.com.receptMes(inputLine);
+			s.close();
 			
 		} catch (UnknownHostException e) {			
 			e.printStackTrace();
 			System.err.println("Hôte introuvable.");
+		} catch (ConnectException e) {
+			e.printStackTrace();
+			System.err.println("Connexion refusée");
 		} catch (IOException e) {			
 			e.printStackTrace();
 		}

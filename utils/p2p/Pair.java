@@ -14,6 +14,9 @@ public class Pair {
 	public Pair(){
 		networkTable = new HashMap<String,String>();
 		communication = new Communication(this);
+		
+		Thread thCom = new Thread(communication);
+		thCom.start();
 	}
 	
 	public void setPre(String key, String ip){
@@ -104,11 +107,11 @@ public class Pair {
 	}
 	
 	public void setHashFromServer(){
-		this.communication.send(this.getIp(), "localhost", Communication.portHash);
+		this.communication.send(this.getIp(), Communication.ipHash, Communication.portHash);
 	}
 	
 	public void notifyToWelcomeServer(){
-		this.communication.send("yo:"+this.getIp(), "localhost", Communication.portWelcome);
+		this.communication.send("yo:"+this.getMine()+":"+this.getIp(), Communication.ipWelcome, Communication.portWelcome);
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
