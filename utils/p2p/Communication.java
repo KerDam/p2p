@@ -11,10 +11,13 @@ import java.util.LinkedList;
 public class Communication {
 	
 	
-	protected static String ipHash = "localhost";
-	protected static String ipWelcome = "localhost";
-	protected static String ipMonitor = "localhost";
-	public static int portPair = 9003;
+	public static String ipHash = "localhost";
+	public static String ipWelcome = "localhost";
+	public static String ipMonitor = "localhost";
+	public static int portPair = 9051;
+	public static int portMoniteur = 8002;
+	public static int portHash = 8001;
+	public static int portWelcome = 8000;
 	private Recepteur recepteurMoniteur;
 	private Recepteur recepteurPair;
 	private Recepteur recepteurHash;
@@ -24,19 +27,13 @@ public class Communication {
 	private LinkedList<String> messages;
 
 	public Communication(Pair p) {
-		this.recepteurMoniteur = new Recepteur(9001,this);
-		this.recepteurHash = new Recepteur(9000,this);
-		this.recepteurPair = new Recepteur(9002,this);
+		this.recepteurPair = new Recepteur(portPair,this);
 		this.pair = p;
 		this.emetteur = new Emetteur(this);
 		
 		// Lancer les thread
-		Thread thRecepteurMoniteur = new Thread(this.recepteurMoniteur);
-		Thread thRecepteurHash = new Thread(this.recepteurHash);
 		Thread thRecepteurPair = new Thread(this.recepteurPair);
 		
-		thRecepteurMoniteur.start();
-		thRecepteurHash.start();
 		thRecepteurPair.start();
 		
 	}
@@ -85,7 +82,7 @@ public class Communication {
 					if (Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1]))
 						this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext(), action[2], portPair);
 					else
-						pair.sendMessage(mes, action[1]);
+						pair.sendMessage(mes, action[1],portPair);
 				break;
 				
 				case "conAccept":
@@ -123,7 +120,12 @@ public class Communication {
 				case "yaf":
 				break;
 				case "hash":
+				try {
 					pair.setMine(action[1], InetAddress.getLocalHost().getHostAddress().toString());
+				} catch (UnknownHostException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
 				break;
 				
 				case "ip":
@@ -155,8 +157,8 @@ public class Communication {
 		
 	}
 
-	public void askHash() {
-		this.emetteur.sendToHashServeur();
+	//public void askHash() {
+		//this.emetteur.sendToHashServeur();
 		
-	}
+	//}
 }

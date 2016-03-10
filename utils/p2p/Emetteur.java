@@ -43,21 +43,21 @@ public class Emetteur {
 	 * yo:
 	 * @param message message que l'on envoie au pair
 	 * @param ip du pair destinataire
-	 */
-	public void sendToHashServeur() {
-		try {
-			Socket sock = new Socket(this.com.ipHash, 8001);
-			OutputStream fluxOut = sock.getOutputStream();
-			PrintWriter out = new PrintWriter(fluxOut, true);			
-			out.println("yo:");
-			
-			
-		} catch (UnknownHostException e) {			
-			e.printStackTrace();
-			System.err.println("Hôte introuvable.");
-		} catch (IOException e) {			
-			e.printStackTrace();
-		}
-	}
+//	 */
+//	public void sendToHashServeur() {
+//		try {
+//			Socket sock = new Socket(this.com.ipHash, 8001);
+//			OutputStream fluxOut = sock.getOutputStream();
+//			PrintWriter out = new PrintWriter(fluxOut, true);			
+//			out.println("yo:");
+//			
+//			
+//		} catch (UnknownHostException e) {			
+//			e.printStackTrace();
+//			System.err.println("Hôte introuvable.");
+//		} catch (IOException e) {			
+//			e.printStackTrace();
+//		}
+//	}
 
 }
