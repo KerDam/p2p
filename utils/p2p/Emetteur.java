@@ -29,11 +29,12 @@ public class Emetteur {
 	 * @param ip du pair destinataire
 	 */
 	public void sendTo(String message, String ip, int port) {
+		System.out.println("port:"+port +"   ip:"+ip);
 		try {
 			Socket s = new Socket(ip, port);
 			PrintWriter out = new PrintWriter(s.getOutputStream(), true);
 		    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-		    
+		    System.out.println("envoi->- "+message);
 		    out.println(message);
 			String inputLine;
 			while ((inputLine = in.readLine()) == null) {
@@ -41,7 +42,7 @@ public class Emetteur {
 			    // On l'enregistre pour la retourner
 			    //System.out.println("waiting");
 			} 
-		    System.out.println("recoi-<- "+inputLine);
+		    
 		    this.com.receptMes(inputLine);
 			s.close();
 			

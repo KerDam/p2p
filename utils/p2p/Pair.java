@@ -14,7 +14,8 @@ public class Pair {
 	public Pair(){
 		networkTable = new HashMap<String,String>();
 		communication = new Communication(this);
-		
+		next = String.valueOf(Integer.MAX_VALUE);
+		networkTable.put(next,"0.0.0.0");
 		Thread thCom = new Thread(communication);
 		thCom.start();
 	}

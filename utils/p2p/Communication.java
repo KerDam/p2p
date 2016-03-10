@@ -15,7 +15,7 @@ public class Communication implements Runnable {
 	public static String ipHash = "172.21.65.28";
 	public static String ipWelcome = "172.21.65.28";
 	public static String ipMonitor = "172.21.65.28";
-	public static int portPair = 9051;
+	public static int portPair = 8004;
 	public static int portMoniteur = 8002;
 	public static int portHash = 8001;
 	public static int portWelcome = 8000;
@@ -28,14 +28,17 @@ public class Communication implements Runnable {
 	private LinkedList<String> messages;
 
 	public Communication(Pair p) {
-		this.recepteurPair = new Recepteur(portHash,this);
+		this.recepteurPair = new Recepteur(portPair,this);
+		this.recepteurMoniteur = new Recepteur(portMoniteur,this);
 		this.pair = p;
 		this.emetteur = new Emetteur(this);
 		this.messages = new LinkedList<String>();
 		
 		// Lancer les thread
 		Thread thRecepteurPair = new Thread(this.recepteurPair);
-		
+		thRecepteurPair.start();
+		Thread thRecepteurMon = new Thread(this.recepteurMoniteur);
+		thRecepteurMon.start();
 		
 		
 		
@@ -62,7 +65,7 @@ public class Communication implements Runnable {
 			//System.out.println(messages.isEmpty());
 			if (messages.isEmpty() == false){
 				String mes = this.messages.pop();
-				System.out.println("traite->- "+mes);
+				System.out.println("traite--- "+mes);
 			
 			String sep = ":";
 			
@@ -145,6 +148,7 @@ public class Communication implements Runnable {
 	}
 	
 	public void receptMes(String s) {
+		System.out.println("recoi-<- "+s);
 		this.messages.addLast(s);
 //		System.out.println(messages.isEmpty());
 		//for(String s2 : this.messages) {
