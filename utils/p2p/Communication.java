@@ -12,9 +12,8 @@ import java.util.concurrent.TimeUnit;
 public class Communication implements Runnable {
 	
 	
-	public static String ipHash = "172.21.65.28";
-	public static String ipWelcome = "172.21.65.28";
-	public static String ipMonitor = "172.21.65.28";
+	public static String ipServeur = "192.168.0.48";
+	
 	public static int portPair = 8004;
 	public static int portMoniteur = 8002;
 	public static int portHash = 8001;
@@ -65,73 +64,74 @@ public class Communication implements Runnable {
 			//System.out.println(messages.isEmpty());
 			if (messages.isEmpty() == false){
 				String mes = this.messages.pop();
-				System.out.println("traite--- "+mes);
-			
-			String sep = ":";
-			
-			String[] action = mes.split(sep);
-			
-			switch (action[0]) {
-			
-			/*Message de pair à pair */
-				case "con":	
-					if (Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1]))
-						this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext(), action[2], portPair);
-					else
-						pair.sendMessage(mes, action[1],portPair);
-				break;
+				System.out.println("t  --- "+mes);
+			if ( !mes.equals("null")) {
+				String sep = ":";
 				
-				case "conAccept":
-					pair.conAccept(action[1], action[3], action[2], action[4]);
-				break;
+				String[] action = mes.split(sep);
 				
-				case "setSucc":
-					pair.setNext(action[2], action[1]);
-				break;					
+				switch (action[0]) {
 				
-				case "setPre":			
-					pair.setPre(action[2], action[1]);
-				break;				
-				
-				
-			/*Message du moniteur */				
-				case "ip?:":	// Demande d'ip		
-				break;
-				
-				case "ukh":			
-				break;
-					
-				case "wrq":			
-				break;
-				
-				case "rt?":		//Demande de table de routage	
+				/*Message de pair à pair */
+					case "con":	
+						if (Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1]))
+							this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext(), action[2], portPair);
+						else
+							pair.sendMessage(mes, action[1],portPair);
 					break;
-				
-				case "oups":			
-				break;
 					
-				case "end":			
-				break;
-				
-				case "yaf":
-				break;
-				case "hash":
-				try {
-					pair.setMine(action[1], InetAddress.getLocalHost().getHostAddress().toString());
-				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					case "conAccept":
+						pair.conAccept(action[1], action[3], action[2], action[4]);
+					break;
+					
+					case "setSucc":
+						pair.setNext(action[2], action[1]);
+					break;					
+					
+					case "setPre":			
+						pair.setPre(action[2], action[1]);
+					break;				
+					
+					
+				/*Message du moniteur */				
+					case "ip?:":	// Demande d'ip		
+					break;
+					
+					case "ukh":			
+					break;
+						
+					case "wrq":			
+					break;
+					
+					case "rt?":		//Demande de table de routage	
+						break;
+					
+					case "oups":			
+					break;
+						
+					case "end":			
+					break;
+					
+					case "yaf":
+					break;
+					case "hash":
+					try {
+						pair.setMine(action[1], InetAddress.getLocalHost().getHostAddress().toString());
+					} catch (UnknownHostException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					break;
+					
+					case "ip":
+						if (!action[1].equals("yaf"))
+							this.send("con:"+pair.getMine()+":"+pair.getIp(pair.getMine()), action[1], portPair);
+					break;
+					
+				/* Sinon */
+					default:
+					break;
 				}
-				break;
-				
-				case "ip":
-					if (!action[1].equals("yaf"))
-						this.send("con:"+pair.getMine()+":"+pair.getIp(pair.getMine()), action[1], portPair);
-				break;
-				
-			/* Sinon */
-				default:
-				break;
 			}
 		}
 			try {
@@ -148,7 +148,7 @@ public class Communication implements Runnable {
 	}
 	
 	public void receptMes(String s) {
-		System.out.println("recoi-<- "+s);
+		System.out.println("r  -<- "+s);
 		this.messages.addLast(s);
 //		System.out.println(messages.isEmpty());
 		//for(String s2 : this.messages) {

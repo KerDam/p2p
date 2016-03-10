@@ -44,7 +44,7 @@ public class Recepteur implements Runnable{
 			    	this.com.receptMes(messageRecu);
 					
 			    }
- 
+		in.close();
 		serverSock.close();
 		} catch (Exception e) {
 			System.out.println(e.getMessage()+"-"+e.getCause());

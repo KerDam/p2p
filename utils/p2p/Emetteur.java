@@ -34,16 +34,19 @@ public class Emetteur {
 			Socket s = new Socket(ip, port);
 			PrintWriter out = new PrintWriter(s.getOutputStream(), true);
 		    BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-		    System.out.println("envoi->- "+message);
+		    System.out.println("e  ->- "+message);
 		    out.println(message);
 			String inputLine;
-			while ((inputLine = in.readLine()) == null) {
-			    // Si l'ip est bien reçue et correcte (i.e. le serveur n'a pas répondu « ukh » ou « wrq »)
-			    // On l'enregistre pour la retourner
-			    //System.out.println("waiting");
-			} 
+			inputLine = in.readLine();
+//			while ((inputLine = in.readLine()) == null) {
+//			    // Si l'ip est bien reçue et correcte (i.e. le serveur n'a pas répondu « ukh » ou « wrq »)
+//			    // On l'enregistre pour la retourner
+//			    //System.out.println("waiting");
+//			} 
 		    
 		    this.com.receptMes(inputLine);
+		    out.close();
+		    in.close();
 			s.close();
 			
 		} catch (UnknownHostException e) {			

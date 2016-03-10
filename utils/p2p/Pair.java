@@ -108,11 +108,11 @@ public class Pair {
 	}
 	
 	public void setHashFromServer(){
-		this.communication.send(this.getIp(), Communication.ipHash, Communication.portHash);
+		this.communication.send(this.getIp(), Communication.ipServeur, Communication.portHash);
 	}
 	
 	public void notifyToWelcomeServer(){
-		this.communication.send("yo:"+this.getMine()+":"+this.getIp(), Communication.ipWelcome, Communication.portWelcome);
+		this.communication.send("yo:"+this.getMine()+":"+this.getIp(), Communication.ipServeur, Communication.portWelcome);
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
