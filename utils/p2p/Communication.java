@@ -60,11 +60,12 @@ public class Communication implements Runnable {
 		
 		
 		while (true){
-			//System.out.println("hello");
+//			System.out.println("hello");
 			//System.out.println(messages.isEmpty());
 			if (messages.isEmpty() == false){
 				String mes = this.messages.pop();
 				System.out.println("t  --- "+mes);
+//				System.out.println(mes.getClass());
 			if ( !mes.equals("null")) {
 				String sep = ":";
 				
@@ -103,7 +104,8 @@ public class Communication implements Runnable {
 					case "wrq":			
 					break;
 					
-					case "rt?":		//Demande de table de routage	
+					case "rt?":		//Demande de table de routage
+						pair.sendRoutingTable();
 						break;
 					
 					case "oups":			

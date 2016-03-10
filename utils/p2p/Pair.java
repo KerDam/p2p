@@ -64,6 +64,13 @@ public class Pair {
 		return (Integer.getInteger(hash)> Integer.getInteger(this.next));
 	}
 	
+	public void sendRoutingTable() {
+		for(String key : networkTable.keySet() ) {
+			sendMessage(getMine()+":"+key+":"+networkTable.get(key), Communication.ipServeur, Communication.portMoniteur);
+		}
+		
+	}
+	
 	public void foreingConnexion(String hash,String ip){
 		if (isNext(hash)){
 			communication.send("conAccept:"+networkTable.get(getMine())+":"+getMine()+":"+networkTable.get(getNext())+":"+getNext(),ip,Communication.portPair);
@@ -123,4 +130,6 @@ public class Pair {
 		}
 		pair.notifyToWelcomeServer();
 	}
+
+	
 }
