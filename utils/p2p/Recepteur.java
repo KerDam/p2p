@@ -53,6 +53,10 @@ public class Recepteur implements Runnable{
 		return str;
 	}
 	
+	public void sendNetworkTable(String msg) {
+		
+	}
+	
 	
 	@Override
 	public void run() {

@@ -14,8 +14,8 @@ public class Pair {
 	public Pair(){
 		networkTable = new HashMap<String,String>();
 		communication = new Communication(this);
-		next = String.valueOf(Integer.MAX_VALUE);
-		networkTable.put(next,"0.0.0.0");
+//		next = String.valueOf(Integer.MAX_VALUE);
+//		networkTable.put(next,"0.0.0.0");
 		Thread thCom = new Thread(communication);
 		thCom.start();
 	}
@@ -66,9 +66,10 @@ public class Pair {
 	
 	public void sendRoutingTable() {
 		for(String key : networkTable.keySet() ) {
-			sendMessage(getMine()+":"+key+":"+networkTable.get(key), Communication.ipServeur, Communication.portMoniteur);
+			communication.responseMonitor(this.getMine()+":"+key+":"+networkTable.get(key));
 		}
-		
+		communication.send("end", Communication.ipServeur, Communication.portMoniteur);
+
 	}
 	
 	public void foreingConnexion(String hash,String ip){
@@ -128,6 +129,8 @@ public class Pair {
 			pair.setHashFromServer();
 			TimeUnit.SECONDS.sleep(1);
 		}
+		pair.setNext(pair.getMine(), pair.getIp());
+		pair.setPre(pair.getMine(), pair.getIp());
 		pair.notifyToWelcomeServer();
 	}
 

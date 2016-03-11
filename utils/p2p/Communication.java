@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit;
 public class Communication implements Runnable {
 	
 	
-	public static String ipServeur = "192.168.0.48";
+	public static String ipServeur = "172.21.65.35";
 	
 	public static int portPair = 8004;
 	public static int portMoniteur = 8002;
@@ -177,6 +177,15 @@ public class Communication implements Runnable {
 	public void run() {
 		this.receptionMessage();
 		
+		
+	}
+
+
+
+
+
+	public void responseMonitor(String mes ) {
+		this.recepteurMoniteur.sendNetworkTable( mes);
 		
 	}
 	
