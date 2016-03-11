@@ -6,6 +6,8 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
+
 public class Pair {
 
 	private HashMap<String,String> networkTable;
@@ -21,19 +23,29 @@ public class Pair {
 	}
 	
 	public void setPre(String key, String ip){
-		networkTable.remove(this.pre);
-		networkTable.put(key, ip);
-		pre = key;
+		//networkTable.remove(this.pre);
+		this.networkTable.put(key, ip);
+		this.pre = key;
+		System.err.println("setPre key:"+key);
+
+//		for(String key2 : networkTable.keySet()){
+//			System.err.println(key2+" : "+networkTable.get(key2));
+//		}
 	}
 	public void setNext(String key, String ip){
-		networkTable.remove(this.next);
-		networkTable.put(key, ip);
-		next = key;
+		//networkTable.remove(this.next);
+		this.networkTable.put(key, ip);
+		this.next = key;
+		System.err.println("setNext key:"+key);
+
+//		for(String key2 : networkTable.keySet()){
+//			System.err.println(key2+" : "+networkTable.get(key2));
+//		}
 	}
 	
 	public void setMine(String key, String ip){
-		networkTable.remove(this.mine);
-		networkTable.put(key, ip);
+		//networkTable.remove(this.mine);
+		networkTable.put(key, this.getMineIp());
 		mine = key;
 	}
 	
@@ -46,9 +58,19 @@ public class Pair {
 	}
 	
 	public String getNext(){
+//		for(String key2 : networkTable.keySet()){
+//			System.err.println(key2+" : "+networkTable.get(key2));
+//			
+//		}
+		System.err.println("retour getNext:"+this.next);
+
 		return this.next;
 	}
 	public String getPre(){
+//		for(String key2 : networkTable.keySet()){
+//			System.err.println(key2+" : "+networkTable.get(key2));
+//		}
+		System.err.println("retour getPre:"+this.pre);
 		return this.pre;
 	}
 	
@@ -64,11 +86,8 @@ public class Pair {
 		return (Integer.getInteger(hash)> Integer.getInteger(this.next));
 	}
 	
-	public void sendRoutingTable() {
-		for(String key : networkTable.keySet() ) {
-			communication.responseMonitor(this.getMine()+":"+key+":"+networkTable.get(key));
-		}
-		communication.send("end", Communication.ipServeur, Communication.portMoniteur);
+	public HashMap<String,String> getNetworkTable() {
+		return this.networkTable;
 
 	}
 	
@@ -84,28 +103,37 @@ public class Pair {
 	public void conAccept(String ipPre,String ipNext, String hashPre, String hashNext){
 		this.setPre(hashPre, ipPre);
 		this.setNext(hashNext, ipNext);
-		this.communication.send("setSuc:"+this.getIp(this.getMine())+":"+this.getMine(), this.getIp(this.getPre()), Communication.portPair);
-		this.communication.send("setPre:"+this.getIp(this.getMine())+":"+this.getMine(), this.getIp(this.getNext()), Communication.portPair);
+		System.out.println(this.getNext());
+		this.communication.send("setSuc:"+this.getMineIp()+":"+this.getMine(), ipPre, Communication.portPair);
+		this.communication.send("setPre:"+this.getMineIp()+":"+this.getMine(), ipNext, Communication.portPair);
 	}
 	
 	public String getClosest(String hash){
-		int closest = -1;
-		int hashInt = Integer.valueOf(hash);
-		Set<String> keys = this.networkTable.keySet();
-		java.util.Iterator<String> ite = keys.iterator();
-		while (ite.hasNext()){
-			int tmp = Integer.valueOf(ite.next());
-			if (tmp > closest && tmp < hashInt){
-				closest = tmp;
-			}
-		}
-		return this.getIp(String.valueOf(closest));
+//		int closest = -1;
+//		int hashInt = Integer.valueOf(hash);
+//		Set<String> keys = this.networkTable.keySet();
+//		java.util.Iterator<String> ite = keys.iterator();
+//		while (ite.hasNext()){
+//			int tmp = Integer.valueOf(ite.next());
+//			if (tmp > closest && tmp < hashInt){
+//				closest = tmp;
+//			}
+//		}
+//		System.err.println("retour getClosest:"+getIp(getNext()));
+//		return this.getIp(String.valueOf(closest));
+		
+
+		return getIp(getNext());
 	}
 	public void sendMessage(String message, String hash, int port){
 		this.communication.send("send:"+message+":"+hash, this.getIp(this.getClosest(hash)),port);
 	}
 	
-	public String getIp(){
+	public boolean isTheEnd(){
+		return (Integer.valueOf(getNext()) < Integer.valueOf(getMine()));
+	}
+	
+	public String getMineIp(){
 		try {
 			return String.valueOf(InetAddress.getLocalHost().getHostAddress());
 		} catch (UnknownHostException e) {
@@ -116,22 +144,26 @@ public class Pair {
 	}
 	
 	public void setHashFromServer(){
-		this.communication.send(this.getIp(), Communication.ipServeur, Communication.portHash);
+		this.communication.send(this.getMineIp(), Communication.ipServeur, Communication.portHash);
 	}
 	
 	public void notifyToWelcomeServer(){
-		this.communication.send("yo:"+this.getMine()+":"+this.getIp(), Communication.ipServeur, Communication.portWelcome);
+		this.communication.send("yo:"+this.getMine()+":"+this.getMineIp(), Communication.ipServeur, Communication.portWelcome);
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
 		Pair pair = new Pair();
+		
 		while(pair.getMine() == null){
 			pair.setHashFromServer();
 			TimeUnit.SECONDS.sleep(1);
 		}
-		pair.setNext(pair.getMine(), pair.getIp());
-		pair.setPre(pair.getMine(), pair.getIp());
+		pair.setNext(pair.getMine(), pair.getMineIp());
+		pair.setPre(pair.getMine(), pair.getMineIp());
 		pair.notifyToWelcomeServer();
+		for(String key : pair.networkTable.keySet()){
+			System.err.println(key+" : "+pair.networkTable.get(key));
+		}
 	}
 
 	

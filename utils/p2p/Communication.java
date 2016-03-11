@@ -1,10 +1,8 @@
 package p2p;
-import java.io.IOException;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.awt.List;
 import java.net.InetAddress;
-import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.concurrent.TimeUnit;
 
@@ -12,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class Communication implements Runnable {
 	
 	
-	public static String ipServeur = "172.21.65.35";
+	public static String ipServeur = "172.21.65.10";
 	
 	public static int portPair = 8004;
 	public static int portMoniteur = 8002;
@@ -75,17 +73,17 @@ public class Communication implements Runnable {
 				
 				/*Message de pair à pair */
 					case "con":	
-						if (Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1]))
+						if ((Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1])) || (pair.getMine() == pair.getNext() && pair.getMine() == pair.getPre()) || (pair.isTheEnd() && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1]) && Integer.valueOf(pair.getMine()) > Integer.valueOf(action[1]) || pair.isTheEnd() && ))) )
 							this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext(), action[2], portPair);
-						else
-							pair.sendMessage(mes, action[1],portPair);
+						else 	
+							this.send(mes, pair.getClosest(action[1]),portPair);
 					break;
 					
 					case "conAccept":
 						pair.conAccept(action[1], action[3], action[2], action[4]);
 					break;
 					
-					case "setSucc":
+					case "setSuc":
 						pair.setNext(action[2], action[1]);
 					break;					
 					
@@ -105,7 +103,7 @@ public class Communication implements Runnable {
 					break;
 					
 					case "rt?":		//Demande de table de routage
-						pair.sendRoutingTable();
+//						pair.sendRoutingTable();
 						break;
 					
 					case "oups":			
@@ -117,12 +115,7 @@ public class Communication implements Runnable {
 					case "yaf":
 					break;
 					case "hash":
-					try {
-						pair.setMine(action[1], InetAddress.getLocalHost().getHostAddress().toString());
-					} catch (UnknownHostException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
+						pair.setMine(action[1], pair.getMineIp());
 					break;
 					
 					case "ip":
@@ -184,8 +177,8 @@ public class Communication implements Runnable {
 
 
 
-	public void responseMonitor(String mes ) {
-		this.recepteurMoniteur.sendNetworkTable( mes);
+	public HashMap<String,String> getNetworkTable() {
+		return this.pair.getNetworkTable();
 		
 	}
 	

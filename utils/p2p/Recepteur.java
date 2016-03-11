@@ -1,12 +1,12 @@
 package p2p;
 
 import java.io.BufferedReader;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashMap;
+import java.util.LinkedList;
 
 public class Recepteur implements Runnable{
 	
@@ -37,12 +37,18 @@ public class Recepteur implements Runnable{
 			
 			 Socket s = serverSock.accept();
 			 BufferedReader in = new BufferedReader(new InputStreamReader(s.getInputStream()));
-			 
+			 PrintWriter out = new PrintWriter(s.getOutputStream(), true);
 			 
 			    if ((messageRecu = in.readLine()) != null) {
 			    	
 			    	this.com.receptMes(messageRecu);
-					
+			    	if ( messageRecu.equals("rt?")) {
+			    		for(String key : this.sendNetworkTable().keySet()) {
+			    			out.println("");
+			    		}
+			    	}
+			    		
+			    	out.println("ok");
 			    }
 		in.close();
 		serverSock.close();
@@ -53,8 +59,9 @@ public class Recepteur implements Runnable{
 		return str;
 	}
 	
-	public void sendNetworkTable(String msg) {
-		
+	public HashMap<String, String> sendNetworkTable() {
+		return this.com.getNetworkTable();
+
 	}
 	
 	
