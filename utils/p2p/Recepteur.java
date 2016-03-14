@@ -43,9 +43,11 @@ public class Recepteur implements Runnable{
 			    	
 			    	this.com.receptMes(messageRecu);
 			    	if ( messageRecu.equals("rt?")) {
+			    		
 			    		for(String key : this.sendNetworkTable().keySet()) {
-			    			out.println("");
+			    			out.println(this.sendNetworkTable().get(key));
 			    		}
+			    		out.println("end");
 			    	}
 			    		
 			    	out.println("ok");

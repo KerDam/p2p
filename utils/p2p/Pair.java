@@ -26,7 +26,7 @@ public class Pair {
 		//networkTable.remove(this.pre);
 		this.networkTable.put(key, ip);
 		this.pre = key;
-		System.err.println("setPre key:"+key);
+//		System.err.println("setPre key:"+key);
 
 //		for(String key2 : networkTable.keySet()){
 //			System.err.println(key2+" : "+networkTable.get(key2));
@@ -36,7 +36,7 @@ public class Pair {
 		//networkTable.remove(this.next);
 		this.networkTable.put(key, ip);
 		this.next = key;
-		System.err.println("setNext key:"+key);
+//		System.err.println("setNext key:"+key);
 
 //		for(String key2 : networkTable.keySet()){
 //			System.err.println(key2+" : "+networkTable.get(key2));
@@ -62,7 +62,7 @@ public class Pair {
 //			System.err.println(key2+" : "+networkTable.get(key2));
 //			
 //		}
-		System.err.println("retour getNext:"+this.next);
+//		System.err.println("retour getNext:"+this.next);
 
 		return this.next;
 	}
@@ -70,7 +70,7 @@ public class Pair {
 //		for(String key2 : networkTable.keySet()){
 //			System.err.println(key2+" : "+networkTable.get(key2));
 //		}
-		System.err.println("retour getPre:"+this.pre);
+//		System.err.println("retour getPre:"+this.pre);
 		return this.pre;
 	}
 	
@@ -103,7 +103,7 @@ public class Pair {
 	public void conAccept(String ipPre,String ipNext, String hashPre, String hashNext){
 		this.setPre(hashPre, ipPre);
 		this.setNext(hashNext, ipNext);
-		System.out.println(this.getNext());
+//		System.out.println(this.getNext());
 		this.communication.send("setSuc:"+this.getMineIp()+":"+this.getMine(), ipPre, Communication.portPair);
 		this.communication.send("setPre:"+this.getMineIp()+":"+this.getMine(), ipNext, Communication.portPair);
 	}
@@ -151,6 +151,25 @@ public class Pair {
 		this.communication.send("yo:"+this.getMine()+":"+this.getMineIp(), Communication.ipServeur, Communication.portWelcome);
 	}
 	
+	public void sendPeerMessage(String hash_pair, String msg){	
+			this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getNext()), Communication.portWelcome);		
+	}
+	
+	public void treatMessage(String msg, String hash_transmitter, String hash_dest) {
+		if ( hash_dest.equals(mine) ) {
+			System.err.println("--- Message recu:");
+			System.out.println("- De :"+ hash_transmitter +"   Pour :"+hash_dest);
+			System.out.println("- " + msg );
+			System.err.println("--- Fin message.");
+
+		} else if ( Integer.parseInt(hash_dest) > Integer.parseInt( mine)) {
+			this.sendPeerMessage(getNext(), msg);
+		} else  {
+			this.sendPeerMessage(getPre(), msg);
+		}
+		
+	}
+	
 	public static void main(String[] args) throws InterruptedException {
 		Pair pair = new Pair();
 		
@@ -161,10 +180,12 @@ public class Pair {
 		pair.setNext(pair.getMine(), pair.getMineIp());
 		pair.setPre(pair.getMine(), pair.getMineIp());
 		pair.notifyToWelcomeServer();
-		for(String key : pair.networkTable.keySet()){
-			System.err.println(key+" : "+pair.networkTable.get(key));
-		}
+//		for(String key : pair.networkTable.keySet()){
+//			System.err.println(key+" : "+pair.networkTable.get(key));
+//		}
 	}
+
+	
 
 	
 }
