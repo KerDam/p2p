@@ -3,22 +3,22 @@ package p2p;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
-import java.util.Set;
+import java.util.Scanner;
 import java.util.concurrent.TimeUnit;
-
-import com.sun.org.apache.bcel.internal.generic.GETSTATIC;
 
 public class Pair {
 
 	private HashMap<String,String> networkTable;
 	private String pre,next,mine;
 	public Communication communication;
+	private Thread thCom;
+	
 	public Pair(){
 		networkTable = new HashMap<String,String>();
 		communication = new Communication(this);
 //		next = String.valueOf(Integer.MAX_VALUE);
 //		networkTable.put(next,"0.0.0.0");
-		Thread thCom = new Thread(communication);
+		thCom = new Thread(communication);
 		thCom.start();
 	}
 	
@@ -151,8 +151,22 @@ public class Pair {
 		this.communication.send("yo:"+this.getMine()+":"+this.getMineIp(), Communication.ipServeur, Communication.portWelcome);
 	}
 	
-	public void sendPeerMessage(String hash_pair, String msg){	
-			this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getNext()), Communication.portWelcome);		
+	public void sendPeerMessage(String hash_pair, String msg){
+		try {
+			int hash_dest = Integer.parseInt(hash_pair);
+			if ( hash_dest > Integer.parseInt(this.mine) ) {
+				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getNext()), Communication.portWelcome);
+			} else {
+				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getPre()), Communication.portWelcome);
+			}
+			
+//			this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, "192.168.0.48", Communication.portPair);
+		} catch (Exception e) {
+			System.err.println("Le Hash n'est pas un entier !");
+		}
+
+		
+
 	}
 	
 	public void treatMessage(String msg, String hash_transmitter, String hash_dest) {
@@ -170,6 +184,11 @@ public class Pair {
 		
 	}
 	
+	private void stop() {
+		this.communication.stopThread();
+		this.thCom.interrupt();
+	}
+	
 	public static void main(String[] args) throws InterruptedException {
 		Pair pair = new Pair();
 		
@@ -183,7 +202,67 @@ public class Pair {
 //		for(String key : pair.networkTable.keySet()){
 //			System.err.println(key+" : "+pair.networkTable.get(key));
 //		}
+
+		boolean out = false;
+		Scanner in = new Scanner( System.in );
+		String cmd = "";
+		String sep = " ";
+		TimeUnit.SECONDS.sleep(2);
+
+		while ( !out) {
+			System.out.print(">>>");
+			cmd = in.nextLine();
+			String[] words = cmd.split(" ");
+
+			if (words.length <= 0) {
+			    displayHelp();
+			} else {
+				switch (words[0]) {
+
+			    case "h": 
+			    	displayHelp();
+				break;
+
+			    case "q":
+			    	pair.stop();
+			    	out = true;
+				break;
+
+			    case "msg":
+					if (words.length != 3) {
+
+					    System.out.println(">Nombre d'arguments incorectes.");
+					} else {
+						String msg = words[1];
+						String hash_dest = words[2];
+					    if (  msg.length() > 0 &&  hash_dest.length() > 0) {
+					    	pair.sendPeerMessage(hash_dest, msg);
+					    
+					    } else {
+						    System.out.println(">Arguments incorectes.");
+					    }
+					}
+				break;
+				}
+			}
+				
+		}
 	}
+		
+
+
+		private static void displayHelp() {
+			
+			System.out.println("");
+			System.out.println("*-----------------------------------------------------------*");
+			System.out.println("|   Commandes disponibles:                                  |");
+			System.out.println("|      . msg 'votre message' hash_dest -> Envoie un message |");
+			System.out.println("|      . h -> aide                                          |");
+			System.out.println("|      . q -> quitter                                       |");
+			System.out.println("*-----------------------------------------------------------*");
+
+		    }
+	
 
 	
 

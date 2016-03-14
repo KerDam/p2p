@@ -23,6 +23,10 @@ public class Communication implements Runnable {
 	private Emetteur emetteur;
 	private Pair pair;
 	private LinkedList<String> messages;
+	
+	private Thread thRecepteurPair;
+	private Thread thRecepteurMon;
+
 
 	public Communication(Pair p) {
 		this.recepteurPair = new Recepteur(portPair,this);
@@ -32,11 +36,10 @@ public class Communication implements Runnable {
 		this.messages = new LinkedList<String>();
 		
 		// Lancer les thread
-		Thread thRecepteurPair = new Thread(this.recepteurPair);
+		thRecepteurPair = new Thread(this.recepteurPair);
 		thRecepteurPair.start();
-		Thread thRecepteurMon = new Thread(this.recepteurMoniteur);
+		thRecepteurMon = new Thread(this.recepteurMoniteur);
 		thRecepteurMon.start();
-		
 		
 		
 	}
@@ -189,6 +192,16 @@ public class Communication implements Runnable {
 		}
 		return returnTable;
 		
+	}
+
+
+
+
+
+	public void stopThread() {
+		this.thRecepteurMon.interrupt();
+		this.thRecepteurPair.interrupt();
+
 	}
 	
 
