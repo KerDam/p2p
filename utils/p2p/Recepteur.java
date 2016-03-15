@@ -52,6 +52,7 @@ public class Recepteur implements Runnable{
 			    		
 			    	out.println("ok");
 			    }
+		out.close();
 		in.close();
 		serverSock.close();
 		} catch (Exception e) {

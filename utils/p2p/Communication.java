@@ -10,7 +10,7 @@ import java.util.concurrent.TimeUnit;
 public class Communication implements Runnable {
 	
 	
-	public static String ipServeur = "192.168.0.48";
+	public static String ipServeur = "0";
 	
 	public static int portPair = 8004;
 	public static int portMoniteur = 8002;
@@ -76,7 +76,10 @@ public class Communication implements Runnable {
 				
 				/*Message de pair à pair */
 					case "con":	
-						if ((Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1])) || (pair.getMine() == pair.getNext() && pair.getMine() == pair.getPre()) || (pair.isTheEnd() && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1]) && Integer.valueOf(pair.getMine()) > Integer.valueOf(action[1]) || pair.isTheEnd() ) )
+						if ((Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1])) 
+								|| (pair.getMine() == pair.getNext() && pair.getMine() == pair.getPre())
+								|| (pair.isTheEnd() && (Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1])) && (Integer.valueOf(pair.getMine()) > Integer.valueOf(action[1])))
+								|| (pair.isTheEnd() && (Integer.valueOf(action[1]) > Integer.valueOf(pair.getMine()) && (Integer.valueOf(action[1]) > Integer.valueOf(pair.getNext())))))
 							this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext(), action[2], portPair);
 						else 	
 							this.send(mes, pair.getClosest(action[1]),portPair);

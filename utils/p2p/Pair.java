@@ -13,9 +13,10 @@ public class Pair {
 	public Communication communication;
 	private Thread thCom;
 	
-	public Pair(){
+	public Pair(String ipServer){
 		networkTable = new HashMap<String,String>();
 		communication = new Communication(this);
+		communication.ipServeur = ipServer;
 //		next = String.valueOf(Integer.MAX_VALUE);
 //		networkTable.put(next,"0.0.0.0");
 		thCom = new Thread(communication);
@@ -155,9 +156,9 @@ public class Pair {
 		try {
 			int hash_dest = Integer.parseInt(hash_pair);
 			if ( hash_dest > Integer.parseInt(this.mine) ) {
-				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getNext()), Communication.portWelcome);
+				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getNext()), Communication.portPair);
 			} else {
-				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getPre()), Communication.portWelcome);
+				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getPre()), Communication.portPair);
 			}
 			
 //			this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, "192.168.0.48", Communication.portPair);
@@ -171,10 +172,17 @@ public class Pair {
 	
 	public void treatMessage(String msg, String hash_transmitter, String hash_dest) {
 		if ( hash_dest.equals(mine) ) {
-			System.err.println("--- Message recu:");
-			System.out.println("- De :"+ hash_transmitter +"   Pour :"+hash_dest);
-			System.out.println("- " + msg );
-			System.err.println("--- Fin message.");
+			try {
+				System.err.println("--- Message recu:");
+				TimeUnit.SECONDS.sleep(1);
+				System.out.println("- De :"+ hash_transmitter +"   Pour :"+hash_dest);
+				System.out.println("- " + msg );
+				TimeUnit.SECONDS.sleep(1);
+				System.err.println("--- Fin message.");
+			} catch (Exception e) {
+				// TODO: handle exception
+			}
+			
 
 		} else if ( Integer.parseInt(hash_dest) > Integer.parseInt( mine)) {
 			this.sendPeerMessage(getNext(), msg);
@@ -190,7 +198,7 @@ public class Pair {
 	}
 	
 	public static void main(String[] args) throws InterruptedException {
-		Pair pair = new Pair();
+		Pair pair = new Pair(args[0]);
 		
 		while(pair.getMine() == null){
 			pair.setHashFromServer();
@@ -212,7 +220,7 @@ public class Pair {
 		while ( !out) {
 			System.out.print(">>>");
 			cmd = in.nextLine();
-			String[] words = cmd.split(" ");
+			String[] words = cmd.split(":");
 
 			if (words.length <= 0) {
 			    displayHelp();
@@ -256,7 +264,7 @@ public class Pair {
 			System.out.println("");
 			System.out.println("*-----------------------------------------------------------*");
 			System.out.println("|   Commandes disponibles:                                  |");
-			System.out.println("|      . msg 'votre message' hash_dest -> Envoie un message |");
+			System.out.println("|      . msg:votre_message:hash_dest -> Envoie un message   |");
 			System.out.println("|      . h -> aide                                          |");
 			System.out.println("|      . q -> quitter                                       |");
 			System.out.println("*-----------------------------------------------------------*");
