@@ -242,8 +242,8 @@ public class Pair {
 /* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public static void main(String[] args) throws InterruptedException {
 
-//		Pair pair = new Pair(args[0]);
-		Pair pair = new Pair("192.168.0.48");
+		Pair pair = new Pair(args[0]);
+
 		
 		while(pair.getMine() == null){
 			pair.setHashFromServer();
