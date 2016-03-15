@@ -36,12 +36,28 @@ public class HashServer {
 	    availableHashes.add(i);
 	}
 	Collections.shuffle(availableHashes);
+	
+	
+	/** AJOUT IAN DEB*/
+	// Les hashs des donn�es possibles sont stockés dans une liste et mélangés
+		LinkedList<Integer> availableHashesData = new LinkedList<Integer>();
+		for (int i = 0; i < circleSize; i++) {
+		    availableHashesData.add(i);
+		}
+		Collections.shuffle(availableHashesData);
+	/*** AJOUT IAN FIN*/
+		
 
 	// Les hashs déjà attribués seront stockés dans une table de hachage
 	// Clé : texte 
         // Valeur : hash correspondant
 	HashMap<String,String> knownHashes = new HashMap<String,String>();
+	
+	/** AJOUT IAN DEB*/
+	HashMap<String,String> knownHashesData = new HashMap<String,String>();
+	/** AJOUT IAN FIN*/
 
+	
 	try (
 	     // Tout ce qui est dans ce bloc sera fermé automatiquement à la fin du try
 	    ServerSocket serverSock = new ServerSocket(portNumber);
@@ -62,26 +78,43 @@ public class HashServer {
 				String toSend;
 				
 				String ip = inputLine;
-				
+		/** AJOUT IAN DEB*/
+//				System.err.println(inputLine);
+				String[] words = ip.split(":");
+				if (words[0].equals("data")) {
+					
+					if (knownHashesData.containsKey(words[1])) {
+					    toSend = knownHashesData.get(words[1]);
+					} else {
+					    if (availableHashesData.isEmpty()) {
+						toSend = "aht";
+					    } else {
+						toSend = "dataHash:"+words[1]+":"+availableHashesData.removeFirst().toString();
+						knownHashesData.put(words[1],toSend);
+					    }
+					}
+				} else {
+		/** AJOUT IAN FIN*/
 				// Si le texte reçu a déjà un hash on l'enverra
 				// Sinon, s'il reste au moins un hash disponible, on lui en attribue un et on l'enverra
 				// Sinon on enverra le message « aht » (all hashes taken)
-				if (knownHashes.containsKey(ip)) {
-				    toSend = knownHashes.get(ip);
-				} else {
-				    if (availableHashes.isEmpty()) {
-					toSend = "aht";
-				    } else {
-					toSend = "hash:"+availableHashes.removeFirst().toString();
-					knownHashes.put(ip,toSend);
+					if (knownHashes.containsKey(ip)) {
+					    toSend = knownHashes.get(ip);
+					} else {
+					    if (availableHashes.isEmpty()) {
+						toSend = "aht";
+					    } else {
+						toSend = "hash:"+availableHashes.removeFirst().toString();
+						knownHashes.put(ip,toSend);
+					    }
+					}
+					
+					
+					
 				    }
-				}
-				
 				// Finalement on envoie le message construit auparavant
 				out.println(toSend);
-				
 			    }
-			    
 			}
 		    catch (IOException e) {
 			System.err.println("Exception pendant la communication avec un pair (HashServer)");

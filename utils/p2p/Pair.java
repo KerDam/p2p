@@ -9,12 +9,16 @@ import java.util.concurrent.TimeUnit;
 public class Pair {
 
 	private HashMap<String,String> networkTable;
+	private HashMap<String,String> dataSet;
+
 	private String pre,next,mine;
 	public Communication communication;
 	private Thread thCom;
 	
 	public Pair(String ipServer){
 		networkTable = new HashMap<String,String>();
+		dataSet = new HashMap<String,String>();
+
 		communication = new Communication(this);
 		communication.ipServeur = ipServer;
 //		next = String.valueOf(Integer.MAX_VALUE);
@@ -192,13 +196,54 @@ public class Pair {
 		
 	}
 	
+	private void setHashDataFromServer(String data) {
+		this.communication.send("data:"+data, Communication.ipServeur, Communication.portHash);	
+	}
+	
+	public void addData(String data, String hash_data) {
+		System.out.println("Hash de la donne: "+hash_data);
+		this.communication.send("responsive:"+hash_data+":"+data, this.networkTable.get(this.getNext()), Communication.portPair);
+		
+	}
+	
+	public void addDataToSet(String hash_data, String data) {
+		this.dataSet.put(hash_data, data);
+
+	}
+	
+
+
+	private void getData(String hash_data, String hash_dest) {
+		this.communication.send("getData:"+hash_data+":"+hash_dest, this.networkTable.get(this.getNext()), Communication.portPair);
+	}
+	
+	public void treatData(String hash_data, String hash_dest) {
+		if ( !hash_dest.equals(hash_dest)) {
+			if ( this.dataSet.containsKey(hash_data) ) {
+				this.sendPeerMessage(hash_dest, "DATA"+hash_data+"-"+this.dataSet.get(hash_data));
+				
+			} else {
+				this.getData(hash_data, hash_dest);
+			}
+		}
+	}
+
+	
 	private void stop() {
 		this.communication.stopThread();
 		this.thCom.interrupt();
 	}
 	
+	
+	
+	
+	
+	
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
 	public static void main(String[] args) throws InterruptedException {
-		Pair pair = new Pair(args[0]);
+
+//		Pair pair = new Pair(args[0]);
+		Pair pair = new Pair("192.168.0.48");
 		
 		while(pair.getMine() == null){
 			pair.setHashFromServer();
@@ -235,6 +280,14 @@ public class Pair {
 			    	pair.stop();
 			    	out = true;
 				break;
+				
+			    case "data":
+			    	pair.setHashDataFromServer(words[1]);
+				break;
+				
+			    case "getData":
+			    	pair.getData(words[1], pair.getMine());
+				break;
 
 			    case "msg":
 					if (words.length != 3) {
@@ -259,17 +312,26 @@ public class Pair {
 		
 
 
+
+
 		private static void displayHelp() {
 			
 			System.out.println("");
-			System.out.println("*-----------------------------------------------------------*");
-			System.out.println("|   Commandes disponibles:                                  |");
-			System.out.println("|      . msg:votre_message:hash_dest -> Envoie un message   |");
-			System.out.println("|      . h -> aide                                          |");
-			System.out.println("|      . q -> quitter                                       |");
-			System.out.println("*-----------------------------------------------------------*");
+			System.out.println("*----------------------------------------------------------------*");
+			System.out.println("|   Commandes disponibles:                                       |");
+			System.out.println("|      . msg:votre_message:hash_dest -> Envoie un message        |");
+			System.out.println("|      . data:votre_donnee -> Creer une donne sur le reseau      |");
+			System.out.println("|      . getData:hash_donnee -> Recupere une donne sur le reseau |");
+			System.out.println("|      . h -> aide                                               |");
+			System.out.println("|                                                                |");
+			System.out.println("*----------------------------------------------------------------*");
 
 		    }
+
+	
+		
+
+		
 	
 
 	

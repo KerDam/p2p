@@ -99,8 +99,14 @@ public class Communication implements Runnable {
 				/* Message d'un pair */
 					case "msg":
 						pair.treatMessage(action[1],action[2], action[3]);
-						
-						
+					break;
+					
+					case "responsive":
+						pair.addDataToSet(action[1],action[2]);
+					break;
+					
+					case "getData":
+						pair.treatData(action[1],action[2]);
 					break;
 				/*Message du moniteur */				
 					case "ip?:":	// Demande d'ip		
@@ -120,6 +126,10 @@ public class Communication implements Runnable {
 					break;
 						
 					case "end":			
+					break;
+					
+					case "dataHash":	
+						this.pair.addData(action[1],action[2]);
 					break;
 					
 					case "yaf":
