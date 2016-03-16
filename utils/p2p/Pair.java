@@ -227,6 +227,13 @@ public class Pair {
 			}
 		}
 	}
+	
+	private void showData() {
+		System.out.println("Donnee dont le pair est responsable:");
+		for(String key : dataSet.keySet()){
+			System.out.println(key+" : "+dataSet.get(key));			
+		}
+	}
 
 	
 	private void stop() {
@@ -243,6 +250,7 @@ public class Pair {
 	public static void main(String[] args) throws InterruptedException {
 
 		Pair pair = new Pair(args[0]);
+//		Pair pair = new Pair("172.21.65.34");
 
 		
 		while(pair.getMine() == null){
@@ -288,6 +296,10 @@ public class Pair {
 			    case "getData":
 			    	pair.getData(words[1], pair.getMine());
 				break;
+				
+			    case "seeData":
+			    	pair.showData();
+				break;
 
 			    case "msg":
 					if (words.length != 3) {
@@ -314,6 +326,8 @@ public class Pair {
 
 
 
+
+
 		private static void displayHelp() {
 			
 			System.out.println("");
@@ -322,6 +336,7 @@ public class Pair {
 			System.out.println("|      . msg:votre_message:hash_dest -> Envoie un message        |");
 			System.out.println("|      . data:votre_donnee -> Creer une donne sur le reseau      |");
 			System.out.println("|      . getData:hash_donnee -> Recupere une donne sur le reseau |");
+			System.out.println("|      . seeData -> Voir les donnees responsable du pair         |");
 			System.out.println("|      . h -> aide                                               |");
 			System.out.println("|                                                                |");
 			System.out.println("*----------------------------------------------------------------*");
