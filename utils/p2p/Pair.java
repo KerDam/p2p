@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.HashMap;
 import java.util.Scanner;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 public class Pair {
@@ -120,14 +121,19 @@ public class Pair {
 		java.util.Iterator<String> ite = keys.iterator();
 		while (ite.hasNext()){
 			int tmp = Integer.valueOf(ite.next());
-			if (tmp > closest && tmp =< hashInt){
+			if (tmp > closest && tmp <= hashInt){
 				closest = tmp;
 			}
 		}
-		if (closest == -1)
-			closest = this.getNext();
+		if ((Integer.valueOf(this.getMine()) < Integer.valueOf(hash) && Integer.valueOf(this.getNext()) > Integer.valueOf(hash)) 
+				|| (this.getMine() == this.getNext() && this.getMine() == this.getPre())
+				|| (this.isTheEnd() && (Integer.valueOf(this.getNext()) > Integer.valueOf(hash)) && (Integer.valueOf(this.getMine()) > Integer.valueOf(hash)))
+				|| (this.isTheEnd() && (Integer.valueOf(hash) > Integer.valueOf(this.getMine()) && (Integer.valueOf(hash) > Integer.valueOf(this.getNext())))))
+			closest = Integer.parseInt(this.getMine());
+		else if(closest == -1)
+			closest = Integer.parseInt(this.getNext());
 		System.err.println("retour getClosest:"+getIp(getNext()));
-		return getIp(closest);
+		return getIp(String.valueOf(closest));
 	}
 	public void sendMessage(String message, String hash, int port){
 		this.communication.send("send:"+message+":"+hash, this.getIp(this.getClosest(hash)),port);
@@ -158,11 +164,8 @@ public class Pair {
 	public void sendPeerMessage(String hash_pair, String msg){
 		try {
 			int hash_dest = Integer.parseInt(hash_pair);
-			if ( hash_dest > Integer.parseInt(this.mine) ) {
-				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getNext()), Communication.portPair);
-			} else {
-				this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.networkTable.get(this.getPre()), Communication.portPair);
-			}
+			this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, this.getClosest(hash_pair), Communication.portPair);
+
 			
 //			this.communication.send("msg:"+msg+":"+this.mine+":"+hash_pair, "192.168.0.48", Communication.portPair);
 		} catch (Exception e) {
@@ -201,12 +204,18 @@ public class Pair {
 	
 	public void addData(String data, String hash_data) {
 		System.out.println("Hash de la donne: "+hash_data);
-		this.communication.send("responsive:"+hash_data+":"+data, this.networkTable.get(this.getNext()), Communication.portPair);
+		this.communication.send("responsive:"+hash_data+":"+data, this.getClosest(hash_data), Communication.portPair);
 		
 	}
 	
 	public void addDataToSet(String hash_data, String data) {
-		this.dataSet.put(hash_data, data);
+//		System.out.println("----------------"+ this.getClosest(hash_data));
+		if ( this.getClosest(hash_data).equals(getMineIp()) ) {
+			this.dataSet.put(hash_data, data);
+		} else {
+			this.addData(data, hash_data);
+		}
+		
 
 	}
 	
@@ -214,17 +223,19 @@ public class Pair {
 
 	private void getData(String hash_data, String hash_dest) {
 		if ( this.dataSet.containsKey(hash_data) ) {
-			this.communication.send("getData:"+hash_data+":"+hash_dest, this.getMineIp(), Communication.portPair);
+//			this.communication.send("getData:"+hash_data+":"+hash_dest, this.getMineIp(), Communication.portPair);
+			System.out.println("DATA;"+hash_data+"-"+this.dataSet.get(hash_data));
 		} else {
-			this.communication.send("getData:"+hash_data+":"+hash_dest, this.networkTable.get(this.getNext()), Communication.portPair);
+			this.communication.send("getData:"+hash_data+":"+hash_dest, this.networkTable.get(this.next), Communication.portPair);
 		}
 	}
 	
 	public void treatData(String hash_data, String hash_dest) {
 		
 		if ( !hash_dest.equals(this.getMine())) {
+
 			if ( this.dataSet.containsKey(hash_data) ) {
-				this.sendPeerMessage(hash_dest, "DATA"+hash_data+"-"+this.dataSet.get(hash_data));
+				this.sendPeerMessage(hash_dest, "DATA;"+hash_data+"-"+this.dataSet.get(hash_data));
 				
 			} else {
 				this.getData(hash_data, hash_dest);
