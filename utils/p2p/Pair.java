@@ -214,11 +214,16 @@ public class Pair {
 
 
 	private void getData(String hash_data, String hash_dest) {
-		this.communication.send("getData:"+hash_data+":"+hash_dest, this.networkTable.get(this.getNext()), Communication.portPair);
+		if ( this.dataSet.containsKey(hash_data) ) {
+			this.communication.send("getData:"+hash_data+":"+hash_dest, this.getMineIp(), Communication.portPair);
+		} else {
+			this.communication.send("getData:"+hash_data+":"+hash_dest, this.networkTable.get(this.getNext()), Communication.portPair);
+		}
 	}
 	
 	public void treatData(String hash_data, String hash_dest) {
-		if ( !hash_dest.equals(hash_dest)) {
+		
+		if ( !hash_dest.equals(this.getMine())) {
 			if ( this.dataSet.containsKey(hash_data) ) {
 				this.sendPeerMessage(hash_dest, "DATA"+hash_data+"-"+this.dataSet.get(hash_data));
 				
