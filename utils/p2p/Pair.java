@@ -114,21 +114,20 @@ public class Pair {
 	}
 	
 	public String getClosest(String hash){
-//		int closest = -1;
-//		int hashInt = Integer.valueOf(hash);
-//		Set<String> keys = this.networkTable.keySet();
-//		java.util.Iterator<String> ite = keys.iterator();
-//		while (ite.hasNext()){
-//			int tmp = Integer.valueOf(ite.next());
-//			if (tmp > closest && tmp < hashInt){
-//				closest = tmp;
-//			}
-//		}
-//		System.err.println("retour getClosest:"+getIp(getNext()));
-//		return this.getIp(String.valueOf(closest));
-		
-
-		return getIp(getNext());
+		int closest = -1;
+		int hashInt = Integer.valueOf(hash);
+		Set<String> keys = this.networkTable.keySet();
+		java.util.Iterator<String> ite = keys.iterator();
+		while (ite.hasNext()){
+			int tmp = Integer.valueOf(ite.next());
+			if (tmp > closest && tmp =< hashInt){
+				closest = tmp;
+			}
+		}
+		if (closest == -1)
+			closest = this.getNext();
+		System.err.println("retour getClosest:"+getIp(getNext()));
+		return getIp(closest);
 	}
 	public void sendMessage(String message, String hash, int port){
 		this.communication.send("send:"+message+":"+hash, this.getIp(this.getClosest(hash)),port);
