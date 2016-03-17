@@ -218,6 +218,26 @@ public class Pair {
 		
 
 	}
+	public String getData(String hash){
+		int hashInt = Integer.valueOf(hash);
+		String dataString = "";
+		if (!dataSet.isEmpty()){
+		Set<String> keys = this.dataSet.keySet();
+//		java.util.Iterator<String> ite = keys.iterator();
+//		while (ite.hasNext()){
+		for (String tmp: keys){
+//			String tmp = ite.next();
+			if (Integer.valueOf(tmp) > hashInt){
+				 dataString += tmp + "," + this.dataSet.get(tmp) + "/";
+				 this.dataSet.remove(tmp);
+			}
+		}
+		}
+		if (dataString.equals(""))
+			return null;
+		else
+			return dataString;
+	}
 	
 
 

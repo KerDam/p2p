@@ -79,14 +79,24 @@ public class Communication implements Runnable {
 						if ((Integer.valueOf(pair.getMine()) < Integer.valueOf(action[1]) && Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1])) 
 								|| (pair.getMine() == pair.getNext() && pair.getMine() == pair.getPre())
 								|| (pair.isTheEnd() && (Integer.valueOf(pair.getNext()) > Integer.valueOf(action[1])) && (Integer.valueOf(pair.getMine()) > Integer.valueOf(action[1])))
-								|| (pair.isTheEnd() && (Integer.valueOf(action[1]) > Integer.valueOf(pair.getMine()) && (Integer.valueOf(action[1]) > Integer.valueOf(pair.getNext())))))
-							this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext(), action[2], portPair);
+								|| (pair.isTheEnd() && (Integer.valueOf(action[1]) > Integer.valueOf(pair.getMine()) && (Integer.valueOf(action[1]) > Integer.valueOf(pair.getNext()))))){
+							String data = pair.getData(action[1]);
+							this.send("conAccept:"+pair.getIp(pair.getMine())+":"+pair.getMine()+":"+pair.getIp(pair.getNext())+":"+pair.getNext()+":"+data, action[2], portPair);
+						}
 						else 	
 							this.send(mes, pair.getClosest(action[1]),portPair);
 					break;
 					
 					case "conAccept":
+						if (action[5] != null){
+						String[] datas = action[5].split("/");
+						int i = 0;
+						for (i = 0; i < datas.length; i++){
+							String[] data = datas[i].split(",");
+							pair.addData(data[1], data[0]);
+						}
 						pair.conAccept(action[1], action[3], action[2], action[4]);
+						}
 					break;
 					
 					case "setSuc":
